@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     pages: './src/app/routes'
   },
   css: [
-    '@/assets/css/main.css',
+    './src/assets/css/main.css',
   ],
   modules: [
     '@pinia/nuxt',
