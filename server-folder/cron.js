@@ -6,7 +6,7 @@ export default function setup() {
   const RUN_EVERY_1_MINUTE = new CronJob('*/1 * * * *', function () {
     const instanceId = process.env['INSTANCE_ID'];
     console.log('RUN_EVERY_1_MINUTE', instanceId);
-    if (parseInt(instanceId, 10) === 1 || typeof instanceId === 'undefined') {
+    if (parseInt(instanceId, 10) === 0 || typeof instanceId === 'undefined') {
       parseRoute()
       console.log('start');
     }
