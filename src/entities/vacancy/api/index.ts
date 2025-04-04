@@ -32,8 +32,13 @@ export const deleteRow = async (id: number): Promise<boolean> => {
       id
     }
   })).data
-  console.log('resp',resp)
   return resp.success
+}
+export const updateRow = async (id: number, params: {[key: string]: string}): Promise<{ data: IVacancy | null}> => {
+  let resp = (await http.post('/admin/vacancy', {
+    id, params
+  })).data
+  return resp.data
 }
 
 

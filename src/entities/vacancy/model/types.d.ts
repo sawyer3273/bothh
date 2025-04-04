@@ -10,6 +10,8 @@ export interface IVacancy {
   name: string
   link: string
   createdAt: date,
+  updatedAt?: date,
   deleted: boolean,
   updateCount: number
+  status: 'active' | 'pending' | 'rejected' | 'approved'
 }

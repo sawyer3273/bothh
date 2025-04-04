@@ -8,6 +8,7 @@ import { Pagination } from '~/src/features/catalog/pagination';
 import type { TableHeader } from '~/src/features/catalog/table/ui/Table.vue';
 import CatalogFilter from '~/src/features/catalog/filter/ui/CatalogFilter.vue';
 import type { IVacancy } from '~/src/entities/vacancy/model/types';
+import moment from 'moment';
 const VacancyModel = useVacancyModel()
 
 let headers: TableHeader[] = [
@@ -25,13 +26,39 @@ let headers: TableHeader[] = [
         type: 'link'
     },
     {
-        key: 'createdAt',
-        label: 'Date',
-        type: 'date'
+        key: 'status',
+        label: 'Status',
+        options: [
+            {
+                value: 'active',
+                label: 'Active'
+            },
+            {
+                value: 'pending',
+                label: 'Pending'
+            },
+            {
+                value: 'rejected',
+                label: 'Rejected'
+            },
+            {
+                value: 'approved',
+                label: 'Approved'
+            }
+        ]
     },
     {
-        key: 'updateCount',
-        label: 'Count'       
+        key: 'updatedAt',
+        label: 'Updated',
+        type: 'date',
+        custom: (item: any) => {
+          return item.updatedAt ? moment(item.updatedAt).format('DD.MMM HH:mm') + ' (' + item.updateCount + ')'  : ''
+        }
+    },
+    {
+        key: 'createdAt',
+        label: 'Created',
+        type: 'date'
     },
     {
         key: 'delete',
@@ -73,6 +100,11 @@ async function onDelete(item: IVacancy, type: string) {
     getTableData()
   }
 }
+async function onSelect(item: IVacancy, type: string, value: string) {
+  if (item.id) {
+    await VacancyModel.update(item.id, {[type]: value});
+  }
+}
 </script>
 
 <template>
@@ -80,7 +112,7 @@ async function onDelete(item: IVacancy, type: string) {
       <div class="flex justify-between">
         <CatalogFilter v-model="keyword" />
       </div>
-      <Table :mode="mode" :items="items" :headers="headers" @actionButton="onDelete"/>
+      <Table :mode="mode" :items="items" :headers="headers" @actionButton="onDelete" @onSelect="onSelect"/>
       <Pagination v-model="page" :perPage="perPage" :total="total" />
   </div>
 </template>

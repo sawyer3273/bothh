@@ -56,7 +56,8 @@ model Vacancy {
   name          String      
   company    String?
   createdAt    DateTime @default(now())
+  updatedAt    DateTime?
   deleted    Boolean @default(false)
   updateCount  Int @default(1)
-
+  status    String @default("active")
 }

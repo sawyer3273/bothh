@@ -5,14 +5,16 @@ import BaseButton from '~/src/shared/ui/components/BaseButton.vue';
 export type TableHeader = {
     key: string,
     label: string,
-    type?: string
+    type?: string,
+    custom?: Function
+    options?: Array<{value: string, label: string}>
 }
 defineProps<{
   mode: 'grid' | 'list',
   items: Array<any>,
   headers: Array<TableHeader>
 }>()
-const emit = defineEmits(['clickAction', 'actionButton'])
+const emit = defineEmits(['clickAction', 'actionButton', 'onSelect'])
 
 </script>
 
@@ -26,9 +28,16 @@ const emit = defineEmits(['clickAction', 'actionButton'])
     <tbody class="table-hover cursor-pointer">
         <tr v-for="item in items" @click="$emit('clickAction', item)">
             <td v-for="header in headers">
-              <template v-if="header.type === 'link'"><a target="_blank" class="text-blue-600" :href="item[header.key]">{{ item[header.key] }}</a></template>
+              <template v-if="header.custom">{{ header.custom(item) }}</template>
+              <template v-else-if="header.options">
+                <select @change="$emit('onSelect', item, header.key, item[header.key])" v-model="item[header.key]" class="bg-gray-50 border border-gray-600 text-gray-900 text-sm rounded-lg block p-2" :class="[item[header.key] === 'pending' ? 'bg-blue-200' : '', item[header.key] === 'rejected' ? 'bg-red-200' : '', item[header.key] === 'approved' ? 'bg-green-200' : '']">
+                  <option v-for="option in header.options" :value="option.value" :selected="option.value === item[header.key]">{{ option.label }}</option>  
+                </select>
+              </template>
+              <template v-else-if="header.type === 'link'"><a target="_blank" class="text-blue-600" :href="item[header.key]">{{ item[header.key] }}</a></template>
               <template v-else-if="header.type === 'date'">{{ moment(item[header.key]).format('DD.MMM HH:mm') }}</template>
               <template v-else-if="header.type === 'action'"><BaseButton color="info" @click.stop="$emit('actionButton', item, header.key)" :label="header.label" /></template>
+              
               <template v-else>{{ item[header.key] }}</template>
             </td>
         </tr>

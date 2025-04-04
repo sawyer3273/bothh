@@ -56,7 +56,6 @@ export const parseRoute = async (req: any, res: Response, next: Function) => {
         const links = data.getData();
         let result = []
         for (let j = 0; j < links.length; j++) {
-          console.log('links[j]',links[j])
           if (links[j].includes('href="')) {
             let link = links[j].split('href="')[1].split('?query=Vu')[0]
             let text = links[j].includes('gritte-text___tkzIl_5-0-8">') ? links[j].split('gritte-text___tkzIl_5-0-8">')[1].split('</span')[0] : ''
@@ -73,27 +72,28 @@ export const parseRoute = async (req: any, res: Response, next: Function) => {
               await prisma.vacancy.create({
                 data: {
                     link: link,
-                    name: text
+                    name: text,
+                    company: company,
+                    createdAt: new Date(Date.now()),
                   }
               });
               await bot.sendMessage(5895617262, `${text}\nСсылка: ${link}`);
-            } else if (!movieObj.company) {
+            } else  {
+              let updateParams: Prisma.VacancyUpdateInput = {
+                updatedAt: new Date(Date.now())
+              }
+              if (!movieObj.company) {
+                updateParams.company = company
+                
+              }
+              if ((!movieObj.updatedAt || movieObj.updatedAt < new Date(Date.now() - 24 * 60 * 60 * 1000)) && movieObj.createdAt < new Date(Date.now() - 24 * 60 * 60 * 1000) ){
+                updateParams.updateCount = movieObj.updateCount + 1
+              }
               await prisma.vacancy.update({
                 where: {
                   id: movieObj.id
                 },
-                data: {
-                  company: company
-                }
-              })
-            } else if (movieObj.createdAt < new Date(Date.now() - 24 * 60 * 60 * 1000)) {
-              await prisma.vacancy.update({
-                where: {
-                  id: movieObj.id
-                },
-                data: {
-                  updateCount: movieObj.updateCount + 1
-                }
+                data: updateParams
               })
             } 
           }
@@ -167,12 +167,34 @@ export const deleteVacancy = async (req: any, res: Response, next: Function) => 
   }
 }
 
+export const updateVacancy = async (req: any, res: Response, next: Function) => {
+  try {
+    const { id, params } = req.body;
+    if (!id) {
+      throw createError.BadRequest("ID is required");
+    }
+    let data = await prisma.vacancy.update({
+      where: {
+        id: Number(id)
+      },
+      data: params
+    });
+    return res.status(200).json({
+      success: true,
+      data
+    });
+  } catch (error) {
+    return errorHandler(error, req, res)
+  }
+}
+
 // Mounted in routes.ts
 export const routes: RouteConfig = {
   routes: [
     { method: 'get', path: '/', handler: parseRoute as unknown as RequestHandler },
     { method: 'get', path: '/vacancy', handler: getVacancy as unknown as RequestHandler },
     { method: 'delete', path: '/vacancy', handler: deleteVacancy as unknown as RequestHandler },
+    { method: 'post', path: '/vacancy', handler: updateVacancy as unknown as RequestHandler },
   ],
 }
 

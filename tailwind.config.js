@@ -5,7 +5,9 @@ module.exports = {
   },
   purge: [],
   theme: {
-    extend: {},
+    minWidth: {
+     '2': '200px',
+    }
   },
   variants: {},
   plugins: [],
