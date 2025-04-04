@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import moment from 'moment';
+
 export type TableHeader = {
     key: string,
-    label: string
+    label: string,
+    type?: string
 }
 defineProps<{
   mode: 'grid' | 'list',
@@ -21,7 +24,11 @@ const emit = defineEmits(['clickAction'])
     </thead>
     <tbody class="table-hover cursor-pointer">
         <tr v-for="item in items" @click="$emit('clickAction', item)">
-            <td v-for="header in headers">{{ item[header.key] }}</td>
+            <td v-for="header in headers">
+              <template v-if="header.type === 'link'"><a :href="item[header.key]">{{ item[header.key] }}</a></template>
+              <template v-else-if="header.type === 'date'">{{ moment(item[header.key]).format('DD.MMM HH:mm') }}</template>
+              <template v-else>{{ item[header.key] }}</template>
+            </td>
         </tr>
     </tbody>
   </table> 

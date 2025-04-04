@@ -6,6 +6,7 @@ import { errorHandler } from '../middlewares/errorHandler';
 import { Scraper, Root, DownloadContent, OpenLinks, CollectContent } from 'nodejs-web-scraper'
 import prisma from '~/tools/prisma';
 import TelegramBot from 'node-telegram-bot-api';
+import type { Prisma } from '@prisma/client';
 const API_KEY_BOT = '7960656635:AAGsvEzrS5e9gMA14c2ke2t50U_1YTr3V-s';
 
 const bot = new TelegramBot(API_KEY_BOT, {
@@ -89,12 +90,46 @@ export const parseRoute = async (req: any, res: Response, next: Function) => {
   }
 };
 
+export const getVacancy = async (req: any, res: Response, next: Function) => {
+  try {
+    const { page = 1, perPage = 20, keyword, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
+    const offset = (page - 1) * perPage;
+    const where = keyword ? {
+      OR: [
+        { name: { contains: keyword, mode: 'insensitive' as Prisma.QueryMode } },
+        { link: { contains: keyword, mode: 'insensitive' as Prisma.QueryMode } },
+      ]
+    } : {};
 
+    const orderBy: { [key: string]: Prisma.SortOrder } = {'createdAt': 'desc'};
+    if (sortBy) {
+      orderBy[sortBy as keyof typeof orderBy] = sortOrder === 'desc' ? 'desc' : 'asc';
+    }
+
+    let params: Prisma.VacancyFindManyArgs = {
+      where,
+      skip: offset,
+      take: Number(perPage),
+      orderBy
+    }
+    const data = await prisma.vacancy.findMany(params);
+    let total = await prisma.vacancy.count({where})
+
+    return res.status(200).json({
+      success: true,
+      data,
+      total
+    });
+  } catch (error) {
+    return errorHandler(error, req, res)
+  }
+}
 
 // Mounted in routes.ts
 export const routes: RouteConfig = {
   routes: [
     { method: 'get', path: '/', handler: parseRoute as unknown as RequestHandler },
+    { method: 'get', path: '/vacancy', handler: getVacancy as unknown as RequestHandler },
   ],
 }
 

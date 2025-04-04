@@ -1,11 +1,11 @@
 <script setup lang="ts">
-  import { Catalog } from '~/src/widgets/catalog'; 
+  import { VacancyList } from '~/src/widgets/vacancyList'; 
 </script>
 
 <template>
   <NuxtLayout>
     <div class="mt-4">
-      <Catalog />
+      <VacancyList />
     </div>
   </NuxtLayout>
 </template>
