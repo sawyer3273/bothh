@@ -26,7 +26,7 @@ const emit = defineEmits(['clickAction', 'actionButton'])
     <tbody class="table-hover cursor-pointer">
         <tr v-for="item in items" @click="$emit('clickAction', item)">
             <td v-for="header in headers">
-              <template v-if="header.type === 'link'"><a target="_blank" class="text-blue" :href="item[header.key]">{{ item[header.key] }}</a></template>
+              <template v-if="header.type === 'link'"><a target="_blank" class="text-blue-600" :href="item[header.key]">{{ item[header.key] }}</a></template>
               <template v-else-if="header.type === 'date'">{{ moment(item[header.key]).format('DD.MMM HH:mm') }}</template>
               <template v-else-if="header.type === 'action'"><BaseButton color="info" @click.stop="$emit('actionButton', item, header.key)" :label="header.label" /></template>
               <template v-else>{{ item[header.key] }}</template>

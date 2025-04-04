@@ -6,6 +6,7 @@ export interface IVacancyModel {
   
 export interface IVacancy {
   id?: number,
+  company?: string,
   name: string
   link: string
   createdAt: date,

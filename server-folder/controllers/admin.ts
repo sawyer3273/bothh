@@ -48,7 +48,7 @@ export const parseRoute = async (req: any, res: Response, next: Function) => {
         }
         const scraper = new Scraper(config);
         const root = new Root();
-        const data = new CollectContent('.vacancy-name-wrapper--PSD41i3dJDUNb5Tr', { name: 'data', contentType:'html' });
+        const data = new CollectContent('.vacancy-info--ieHKDTkezpEj0Gsx', { name: 'data', contentType:'html' });
 
         root.addOperation(data);
 
@@ -56,10 +56,13 @@ export const parseRoute = async (req: any, res: Response, next: Function) => {
         const links = data.getData();
         let result = []
         for (let j = 0; j < links.length; j++) {
+          console.log('links[j]',links[j])
           if (links[j].includes('href="')) {
             let link = links[j].split('href="')[1].split('?query=Vu')[0]
-            let text = links[j].split('gritte-text___tkzIl_5-0-8">')[1].split('</span')[0]
-            result.push({link, text})
+            let text = links[j].includes('gritte-text___tkzIl_5-0-8">') ? links[j].split('gritte-text___tkzIl_5-0-8">')[1].split('</span')[0] : ''
+            let company = links[j].includes('cy-serp__vacancy-employer-text" class="magritte-text___tkzIl_5-0-8">') ? links[j].split('cy-serp__vacancy-employer-text" class="magritte-text___tkzIl_5-0-8">')[1].split('</span')[0].replace('ООО&nbsp;<!-- -->', '').replace('ТОО&nbsp;<!-- -->', '') : ''
+            
+            result.push({link, text, company})
             let movieObj = await prisma.vacancy.findFirst({
               where: {
                   link: link,
@@ -74,8 +77,25 @@ export const parseRoute = async (req: any, res: Response, next: Function) => {
                   }
               });
               await bot.sendMessage(5895617262, `${text}\nСсылка: ${link}`);
-              
-            }
+            } else if (!movieObj.company) {
+              await prisma.vacancy.update({
+                where: {
+                  id: movieObj.id
+                },
+                data: {
+                  company: company
+                }
+              })
+            } else if (movieObj.createdAt < new Date(Date.now() - 24 * 60 * 60 * 1000)) {
+              await prisma.vacancy.update({
+                where: {
+                  id: movieObj.id
+                },
+                data: {
+                  updateCount: movieObj.updateCount + 1
+                }
+              })
+            } 
           }
         }
         if (!res) {
@@ -157,3 +177,4 @@ export const routes: RouteConfig = {
 }
 
 export default routes
+

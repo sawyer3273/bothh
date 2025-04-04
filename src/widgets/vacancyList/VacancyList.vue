@@ -16,6 +16,10 @@ let headers: TableHeader[] = [
         label: 'Vacancy'       
     },
     {
+        key: 'company',
+        label: 'Company'       
+    },
+    {
         key: 'link',
         label: 'Link',
         type: 'link'
@@ -24,6 +28,10 @@ let headers: TableHeader[] = [
         key: 'createdAt',
         label: 'Date',
         type: 'date'
+    },
+    {
+        key: 'updateCount',
+        label: 'Count'       
     },
     {
         key: 'delete',
