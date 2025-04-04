@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import moment from 'moment';
+import BaseButton from '~/src/shared/ui/components/BaseButton.vue';
 
 export type TableHeader = {
     key: string,
@@ -11,7 +12,7 @@ defineProps<{
   items: Array<any>,
   headers: Array<TableHeader>
 }>()
-const emit = defineEmits(['clickAction'])
+const emit = defineEmits(['clickAction', 'actionButton'])
 
 </script>
 
@@ -27,6 +28,7 @@ const emit = defineEmits(['clickAction'])
             <td v-for="header in headers">
               <template v-if="header.type === 'link'"><a :href="item[header.key]">{{ item[header.key] }}</a></template>
               <template v-else-if="header.type === 'date'">{{ moment(item[header.key]).format('DD.MMM HH:mm') }}</template>
+              <template v-else-if="header.type === 'action'"><BaseButton color="info" @click.stop="$emit('actionButton', item, header.key)" :label="header.label" /></template>
               <template v-else>{{ item[header.key] }}</template>
             </td>
         </tr>

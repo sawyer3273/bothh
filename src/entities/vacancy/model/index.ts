@@ -16,6 +16,12 @@ export const useVacancyModel = defineStore('vacancy', {
                 this.updateStore(result.data, result.total)
             }
         },
+        async delete(id: number): Promise<void> {
+            let result = await VacancyApi.deleteRow(id)
+            if (result) {
+                this.updateStore(this.items.filter((item: IVacancy) => item.id !== id), this.totalItems - 1)
+            }
+        },
 
         updateStore(payload: IVacancy[], total: number): void {
             this.items = [...payload] || []

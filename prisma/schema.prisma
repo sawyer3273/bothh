@@ -55,5 +55,7 @@ model Vacancy {
   link           String            @unique
   name          String      
   createdAt    DateTime @default(now())
+  deleted    Boolean @default(false)
+  updateCount  Int @default(1)
 
 }

@@ -26,4 +26,15 @@ export const fetchData = async (params: fetchVacancyParams): Promise<{ data: IVa
   }
 }
 
+export const deleteRow = async (id: number): Promise<boolean> => {
+  let resp = (await http.delete('/admin/vacancy', {
+    data: {
+      id
+    }
+  })).data
+  console.log('resp',resp)
+  return resp.success
+}
+
+
 

@@ -7,7 +7,7 @@ import { Table } from '~/src/features/catalog/table';
 import { Pagination } from '~/src/features/catalog/pagination';
 import type { TableHeader } from '~/src/features/catalog/table/ui/Table.vue';
 import CatalogFilter from '~/src/features/catalog/filter/ui/CatalogFilter.vue';
-import type { ICountry } from '~/src/entities/country/model/types';
+import type { IVacancy } from '~/src/entities/vacancy/model/types';
 const VacancyModel = useVacancyModel()
 
 let headers: TableHeader[] = [
@@ -25,13 +25,16 @@ let headers: TableHeader[] = [
         label: 'Date',
         type: 'date'
     },
+    {
+        key: 'delete',
+        label: 'Delete',
+        type: 'action'
+    },
  
 ]
 
 async function getTableData() {
   await VacancyModel.getData({page: page.value.toString(), keyword: keyword.value, perPage: perPage.value.toString()});
-  total.value = VacancyModel.totalItems
-  items.value = VacancyModel.items
 }
 
 onMounted(() => {
@@ -47,22 +50,21 @@ const items = ref(VacancyModel.items.slice(0, perPage.value))
 const total = ref(VacancyModel.totalItems)
 const keyword = ref('')
 
-watch(() => [VacancyModel.items, page.value, mode.value,], () => {
- // getData()
-})
-
 watch(() => [keyword.value, page.value], () => {
   getTableData()
 })
 
-function getData() {
-  let start = (page.value - 1) * perPage.value
-  let end = page.value * perPage.value
+watch(() => [VacancyModel.totalItems], () => {
   total.value = VacancyModel.totalItems
-  items.value = VacancyModel.items.slice(start, end)
+  items.value = VacancyModel.items
+})
+
+async function onDelete(item: IVacancy, type: string) {
+  if (type == 'delete' && item.id) {
+    await VacancyModel.delete(item.id);
+    getTableData()
+  }
 }
-
-
 </script>
 
 <template>
@@ -70,7 +72,7 @@ function getData() {
       <div class="flex justify-between">
         <CatalogFilter v-model="keyword" />
       </div>
-      <Table :mode="mode" :items="items" :headers="headers" />
+      <Table :mode="mode" :items="items" :headers="headers" @actionButton="onDelete"/>
       <Pagination v-model="page" :perPage="perPage" :total="total" />
   </div>
 </template>

@@ -5,7 +5,10 @@ export interface IVacancyModel {
 
   
 export interface IVacancy {
+  id?: number,
   name: string
   link: string
-  createdAt: date
+  createdAt: date,
+  deleted: boolean,
+  updateCount: number
 }

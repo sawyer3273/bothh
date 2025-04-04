@@ -94,13 +94,13 @@ export const getVacancy = async (req: any, res: Response, next: Function) => {
   try {
     const { page = 1, perPage = 20, keyword, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
     const offset = (page - 1) * perPage;
-    const where = keyword ? {
+    const where: Prisma.VacancyWhereInput = keyword ? {
       OR: [
         { name: { contains: keyword, mode: 'insensitive' as Prisma.QueryMode } },
         { link: { contains: keyword, mode: 'insensitive' as Prisma.QueryMode } },
       ]
     } : {};
-
+    where.deleted = false
     const orderBy: { [key: string]: Prisma.SortOrder } = {'createdAt': 'desc'};
     if (sortBy) {
       orderBy[sortBy as keyof typeof orderBy] = sortOrder === 'desc' ? 'desc' : 'asc';
@@ -125,11 +125,34 @@ export const getVacancy = async (req: any, res: Response, next: Function) => {
   }
 }
 
+export const deleteVacancy = async (req: any, res: Response, next: Function) => {
+  try {
+    const { id } = req.body;
+    if (!id) {
+      throw createError.BadRequest("ID is required");
+    }
+    await prisma.vacancy.update({
+      where: {
+        id: Number(id)
+      },
+      data: {
+        deleted: true
+      }
+    });
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    return errorHandler(error, req, res)
+  }
+}
+
 // Mounted in routes.ts
 export const routes: RouteConfig = {
   routes: [
     { method: 'get', path: '/', handler: parseRoute as unknown as RequestHandler },
     { method: 'get', path: '/vacancy', handler: getVacancy as unknown as RequestHandler },
+    { method: 'delete', path: '/vacancy', handler: deleteVacancy as unknown as RequestHandler },
   ],
 }
 
