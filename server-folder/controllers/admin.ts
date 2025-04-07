@@ -37,7 +37,7 @@ bot.on('text', async msg => {
 export const parseRoute = async (req: any, res: Response, next: Function) => {
   try {
     console.log('req.url',req.link)
-    let url = req.link
+    let url = req ? req.link : ''
     let origin = url ? url : `https://krasnodar.hh.ru/search/vacancy?text=Frontend&salary=&schedule=remote&ored_clusters=true&order_by=publication_time&hhtmFrom=vacancy_search_list&hhtmFromLabel=vacancy_search_line`
     //let origin = url ? url : `https://krasnodar.hh.ru/search/vacancy?from=suggest_post&ored_clusters=true&order_by=publication_time&hhtmFrom=vacancy_search_list&hhtmFromLabel=vacancy_search_line&enable_snippets=false&L_save_area=true&schedule=remote&search_field=name&search_field=company_name&search_field=description&text=Vue.js`
     console.log('origin',origin)
