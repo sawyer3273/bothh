@@ -34,10 +34,13 @@ bot.on('text', async msg => {
 
 })
 
-export const parseRoute = async (req: any, res: Response, url: string) => {
+export const parseRoute = async (req: any, res: Response, next: Function) => {
   try {
-    let origin = url ? url : `https://krasnodar.hh.ru/search/vacancy?from=suggest_post&ored_clusters=true&order_by=publication_time&hhtmFrom=vacancy_search_list&hhtmFromLabel=vacancy_search_line&enable_snippets=false&L_save_area=true&schedule=remote&search_field=name&search_field=company_name&search_field=description&text=Vue.js`
-    
+    console.log('req.url',req.link)
+    let url = req.link
+    let origin = url ? url : `https://krasnodar.hh.ru/search/vacancy?text=Frontend&salary=&schedule=remote&ored_clusters=true&order_by=publication_time&hhtmFrom=vacancy_search_list&hhtmFromLabel=vacancy_search_line`
+    //let origin = url ? url : `https://krasnodar.hh.ru/search/vacancy?from=suggest_post&ored_clusters=true&order_by=publication_time&hhtmFrom=vacancy_search_list&hhtmFromLabel=vacancy_search_line&enable_snippets=false&L_save_area=true&schedule=remote&search_field=name&search_field=company_name&search_field=description&text=Vue.js`
+    console.log('origin',origin)
         const config = {
           baseSiteUrl: origin,
           startUrl: origin,
@@ -57,8 +60,9 @@ export const parseRoute = async (req: any, res: Response, url: string) => {
         let result = []
         for (let j = 0; j < links.length; j++) {
           if (links[j].includes('href="')) {
-            let link = links[j].split('href="')[1].split('?query=Vu')[0]
-            let text = links[j].includes('gritte-text___tkzIl_5-0-8">') ? links[j].split('gritte-text___tkzIl_5-0-8">')[1].split('</span')[0] : ''
+            let stopString = links[j].includes('<span class=\"premium-contain') ? '<span class=\"premium-contain': '<span class='
+            let link = links[j].split('href="')[1].split('?query')[0]
+            let text = links[j].includes('gritte-text___tkzIl_5-0-8">') ?   links[j].split('gritte-text___tkzIl_5-0-8">')[1].split('<span class=\"premium-contain')[0].split('</span')[0]  : ''
             let company = links[j].includes('cy-serp__vacancy-employer-text" class="magritte-text___tkzIl_5-0-8">') ? links[j].split('cy-serp__vacancy-employer-text" class="magritte-text___tkzIl_5-0-8">')[1].split('</span')[0].replace('ООО&nbsp;<!-- -->', '').replace('ТОО&nbsp;<!-- -->', '') : ''
             
             result.push({link, text, company})
