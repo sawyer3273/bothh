@@ -36,6 +36,7 @@ bot.on('text', async msg => {
 
 export const parseRoute = async (req: any, res: Response, next: Function) => {
   try {
+    let blackList = ['PHP', 'React', 'Java', 'Python', 'Angular', 'QA', '.NET', 'Kotlin', 'Junior']
     let url = req ? req.link : ''
     let origin = url ? url : `https://krasnodar.hh.ru/search/vacancy?text=Frontend&salary=&schedule=remote&ored_clusters=true&order_by=publication_time&hhtmFrom=vacancy_search_list&hhtmFromLabel=vacancy_search_line`
     //let origin = url ? url : `https://krasnodar.hh.ru/search/vacancy?from=suggest_post&ored_clusters=true&order_by=publication_time&hhtmFrom=vacancy_search_list&hhtmFromLabel=vacancy_search_line&enable_snippets=false&L_save_area=true&schedule=remote&search_field=name&search_field=company_name&search_field=description&text=Vue.js`
@@ -80,7 +81,16 @@ export const parseRoute = async (req: any, res: Response, next: Function) => {
                     createdAt: new Date(Date.now()),
                   }
               });
-              await bot.sendMessage(5895617262, `${text}\nСсылка: ${link}`);
+              let isBlacked = false
+              blackList.forEach(one => {
+                if (text.includes(one)) {
+                  isBlacked = true
+                }
+              })
+              if (!isBlacked) {
+                await bot.sendMessage(5895617262, `${text}\nСсылка: ${link}`);
+              }
+              
             } else  {
               let updateParams: Prisma.VacancyUpdateInput = {
                 updatedAt: new Date(Date.now())
