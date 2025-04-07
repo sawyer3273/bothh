@@ -8,6 +8,7 @@ export default function setup() {
     console.log('RUN_EVERY_1_MINUTE', instanceId);
     if (parseInt(instanceId, 10) === 0 || typeof instanceId === 'undefined') {
       parseRoute()
+      parseRoute(null, null, 'https://krasnodar.hh.ru/search/vacancy?text=Frontend&salary=&schedule=remote&ored_clusters=true&order_by=publication_time&hhtmFrom=vacancy_search_list&hhtmFromLabel=vacancy_search_line')
       console.log('start');
     }
   });

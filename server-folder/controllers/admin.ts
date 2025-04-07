@@ -34,9 +34,9 @@ bot.on('text', async msg => {
 
 })
 
-export const parseRoute = async (req: any, res: Response, next: Function) => {
+export const parseRoute = async (req: any, res: Response, url: string) => {
   try {
-    let origin =  `https://krasnodar.hh.ru/search/vacancy?from=suggest_post&ored_clusters=true&order_by=publication_time&hhtmFrom=vacancy_search_list&hhtmFromLabel=vacancy_search_line&enable_snippets=false&L_save_area=true&schedule=remote&search_field=name&search_field=company_name&search_field=description&text=Vue.js`
+    let origin = url ? url : `https://krasnodar.hh.ru/search/vacancy?from=suggest_post&ored_clusters=true&order_by=publication_time&hhtmFrom=vacancy_search_list&hhtmFromLabel=vacancy_search_line&enable_snippets=false&L_save_area=true&schedule=remote&search_field=name&search_field=company_name&search_field=description&text=Vue.js`
     
         const config = {
           baseSiteUrl: origin,
