@@ -61,8 +61,8 @@ export const parseRoute = async (req: any, res: Response, next: Function) => {
         for (let j = 0; j < links.length; j++) {
           if (links[j].includes('href="')) {
             let link = links[j].split('href="')[1].split('?query')[0]
-            let text = links[j].includes('gritte-text___tkzIl_5-0-9">') ?   links[j].split('gritte-text___tkzIl_5-0-9">')[1].split('<span class=\"premium-contain')[0].split('</span')[0]  : ''
-            let company = links[j].includes('cy-serp__vacancy-employer-text" class="magritte-text___tkzIl_5-0-9">') ? links[j].split('cy-serp__vacancy-employer-text" class="magritte-text___tkzIl_5-0-9">')[1].split('</span')[0].replace('ООО&nbsp;<!-- -->', '').replace('ТОО&nbsp;<!-- -->', '') : ''
+            let text = links[j].includes('gritte-text___tkzIl_5-0-10">') ?   links[j].split('gritte-text___tkzIl_5-0-10">')[1].split('<span class=\"premium-contain')[0].split('</span')[0]  : ''
+            let company = links[j].includes('cy-serp__vacancy-employer-text" class="magritte-text___tkzIl_5-0-10">') ? links[j].split('cy-serp__vacancy-employer-text" class="magritte-text___tkzIl_5-0-10">')[1].split('</span')[0].replace('ООО&nbsp;<!-- -->', '').replace('ТОО&nbsp;<!-- -->', '') : ''
             
             result.push({link, text, company})
             let movieObj = await prisma.vacancy.findFirst({
